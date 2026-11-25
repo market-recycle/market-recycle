@@ -30,22 +30,49 @@ def load_rules(path=None):
         return json.load(f)
 
 
-def read_rows(path):
-    """Return (header, rows) from a CSV or XLSX export. Skips Panjiva's banner lines above the header."""
-    if path.lower().endswith((".xlsx", ".xlsm")):
-        import openpyxl
-        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
-        raw = [[("" if v is None else v) for v in r] for r in wb.worksheets[0].iter_rows(values_only=True)]
-    else:
-        with open(path, "rb") as f:
-            text = f.read().decode("utf-8-sig", "replace")
-        raw = list(csv.reader(io.StringIO(text)))
+def _find_header(raw):
     # The header is the first row with at least three non-empty cells, one of them naming a date.
     for i, r in enumerate(raw[:30]):
         cells = [str(c).strip().lower() for c in r if str(c).strip()]
         if len(cells) >= 3 and any("date" in c for c in cells):
-            return [str(c).strip() for c in r], raw[i + 1:]
-    raise ValueError(f"No header row found in {os.path.basename(path)}")
+            return i
+    return None
+
+
+def read_tables(path):
+    """Yield (header, rows) for every sheet in an XLSX, or the one table in a CSV.
+    Sheets without a recognisable header (summaries, notes) are skipped."""
+    if path.lower().endswith((".xlsx", ".xlsm")):
+        import openpyxl
+        wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+        sheets = [[[("" if v is None else v) for v in r] for r in ws.iter_rows(values_only=True)] for ws in wb.worksheets]
+    else:
+        with open(path, "rb") as f:
+            text = f.read().decode("utf-8-sig", "replace")
+        sheets = [list(csv.reader(io.StringIO(text)))]
+    found = False
+    for raw in sheets:
+        i = _find_header(raw)
+        if i is None:
+            continue
+        header = [str(c).strip() for c in raw[i]]
+        low = [h.lower() for h in header]
+        if not any("goods" in h or "description" in h for h in low):
+            continue
+        found = True
+        yield header, raw[i + 1:]
+    if not found:
+        raise ValueError(f"No shipment table found in {os.path.basename(path)}")
+
+
+def load_exclusions():
+    """Names of the publisher's affiliates, kept outside the repository (one per line).
+    Set PANJIVA_EXCLUDE_FILE to its path. Matching is case-insensitive and by substring."""
+    p = os.environ.get("PANJIVA_EXCLUDE_FILE")
+    if not p or not os.path.exists(p):
+        return []
+    with open(p) as f:
+        return [ln.strip().lower() for ln in f if ln.strip() and not ln.startswith("#")]
 
 
 def map_columns(header, rules):
@@ -97,13 +124,16 @@ def month_of(v):
     return f"{m.group(1)}-{m.group(2)}" if m else None
 
 
-def classify(desc, rules):
+def classify(desc, rules, hs=""):
     d = " ".join(str(desc).lower().split())
     cls = "unclassified"
     for c in rules["classes"]:
         if any(k in d for k in c["keywords"]):
             cls = c["class"]
             break
+    if cls == "unclassified":
+        h4 = re.sub(r"\D", "", str(hs))[:4]
+        cls = rules.get("hs_overrides", {}).get(h4, cls) if h4 else cls
     form = next((f["form"] for f in rules["forms"] if any(k in d for k in f["keywords"])), None)
     if cls != "uncured":
         form = None  # forms describe uncured material only
@@ -132,31 +162,59 @@ def _add(b, kg, val):
         b["kg_with_value"] += kg
 
 
-def aggregate(paths, rules):
-    months, unplaced, skipped = {}, Counter(), Counter()
+def _cell(r, cols, field):
+    return r[cols[field]] if field in cols and cols[field] < len(r) else ""
+
+
+def aggregate(paths, rules, exclude=None):
+    exclude = exclude if exclude is not None else load_exclusions()
+    sources = [x.lower() for x in rules.get("sources", [])]
+    months, unplaced, skipped, seen = {}, Counter(), Counter(), set()
     for path in paths:
-        header, rows = read_rows(path)
-        cols = map_columns(header, rules)
-        for r in rows:
-            if not any(str(c).strip() for c in r):
-                continue
-            r = list(r) + [""] * (len(header) - len(r))
-            m = month_of(r[cols["date"]])
-            kg = weight_kg(r, cols)
-            if not m or not kg or kg <= 0:
-                skipped["no date or weight"] += 1
-                continue
-            val = num(r[cols["value_usd"]]) if "value_usd" in cols else None
-            desc = r[cols["description"]]
-            cls, form = classify(desc, rules)
-            if cls == "unclassified":
-                unplaced[" ".join(str(desc).split())[:120]] += 1
-            country = str(r[cols["country"]]).strip().title() if "country" in cols and str(r[cols["country"]]).strip() else "Unknown"
-            rec = months.setdefault(m, {"classes": {}, "forms": {}, "countries": {}})
-            _add(rec["classes"].setdefault(cls, _bucket()), kg, val)
-            if form:
-                _add(rec["forms"].setdefault(form, _bucket()), kg, val)
-            _add(rec["countries"].setdefault(country, {}).setdefault(cls, _bucket()), kg, val)
+        for header, rows in read_tables(path):
+            cols = map_columns(header, rules)
+            for r in rows:
+                if not any(str(c).strip() for c in r):
+                    continue
+                r = list(r) + [""] * (len(header) - len(r))
+                src = str(_cell(r, cols, "source")).strip().lower()
+                if sources and src and src not in sources:
+                    skipped["other data source"] += 1
+                    continue
+                if not src and str(_cell(r, cols, "origin")).strip().lower() not in ("", "united states", "usa", "us"):
+                    skipped["not from the U.S."] += 1
+                    continue
+                prefixes = rules.get("hs_prefixes")
+                h = re.sub(r"\D", "", str(_cell(r, cols, "hs")))
+                if prefixes and h and not any(h.startswith(x) for x in prefixes):
+                    skipped["other HS code"] += 1
+                    continue
+                parties = (str(_cell(r, cols, "shipper")) + " " + str(_cell(r, cols, "consignee"))).lower()
+                if any(x in parties for x in exclude):
+                    skipped["excluded party"] += 1
+                    continue
+                m = month_of(r[cols["date"]])
+                kg = weight_kg(r, cols)
+                if not m or not kg or kg <= 0:
+                    skipped["no date or weight"] += 1
+                    continue
+                val = num(r[cols["value_usd"]]) if "value_usd" in cols else None
+                country = str(_cell(r, cols, "country")).strip().title() or "Unknown"
+                # The same shipment can sit on several tabs (e.g. one per company tracked).
+                key = (str(_cell(r, cols, "shipper")).lower()[:24], str(r[cols["date"]])[:10], round(kg), val, country)
+                if key in seen:
+                    skipped["duplicate"] += 1
+                    continue
+                seen.add(key)
+                desc = r[cols["description"]]
+                cls, form = classify(desc, rules, _cell(r, cols, "hs"))
+                if cls == "unclassified":
+                    unplaced[" ".join(str(desc).split())[:120]] += 1
+                rec = months.setdefault(m, {"classes": {}, "forms": {}, "countries": {}})
+                _add(rec["classes"].setdefault(cls, _bucket()), kg, val)
+                if form:
+                    _add(rec["forms"].setdefault(form, _bucket()), kg, val)
+                _add(rec["countries"].setdefault(country, {}).setdefault(cls, _bucket()), kg, val)
     return months, unplaced, skipped
 
 

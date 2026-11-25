@@ -46,6 +46,8 @@ The publisher's Panjiva license allows publishing figures derived from it. Each 
 2. Run `python -m index.panjiva path/to/export.csv`. It sorts every shipment into uncured / cured /
    unclassified from its description (rules in `config/panjiva.json`), and writes monthly aggregates to
    `data/inputs/panjiva/YYYY-MM.json`. Descriptions it couldn't place are printed for tuning the rules.
+   Workbooks with one tab per company are fine: every tab is read and duplicates are dropped.
+   Affiliates to leave out are listed in a file kept outside the repo; point `PANJIVA_EXCLUDE_FILE` at it.
 3. Commit only the aggregates. The raw export names shippers and consignees and is git-ignored.
 
 Panjiva covers ocean bills of lading; truck and rail to Mexico and Canada largely don't appear.

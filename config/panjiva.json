@@ -1,26 +1,204 @@
 {
   "_about": "Rules for sorting Panjiva shipment descriptions. Checked in order: the first class whose keywords match wins, so uncured terms come before cured ones ('unvulcanized' contains 'vulcanized'). Edit and re-run; the published aggregates record which rules version produced them.",
-  "rules_version": "2026-11-25",
+  "rules_version": "2026-11-25b",
   "classes": [
-    {"class": "uncured", "keywords": ["uncured", "un-cured", "unvulcan", "non-vulcan", "green tire", "green tyre", "green carcass", "compound scrap", "scrap compound", "rubber compound", "mixed compound", "grade a", "friction", "calender", "calendar trim", "mill trim", "slab", "rubber skim", "skim stock", "bead filler", "apex"]},
-    {"class": "cured", "keywords": ["crumb", "buffing", "tire derived", "tyre derived", "tdf", "shred", "chip", "ground rubber", "granul", "powder", "mulch", "cured", "vulcanized", "vulcanised", "scrap tire", "scrap tyre", "used tire", "used tyre", "inner tube", "bales of tire"]}
+    {
+      "class": "uncured",
+      "keywords": [
+        "uncured",
+        "un-cured",
+        "unvulcan",
+        "non-vulcan",
+        "green tire",
+        "green tyre",
+        "green carcass",
+        "compound scrap",
+        "scrap compound",
+        "rubber compound",
+        "mixed compound",
+        "grade a",
+        "friction",
+        "calender",
+        "calendar trim",
+        "mill trim",
+        "slab",
+        "rubber skim",
+        "skim stock",
+        "bead filler",
+        "apex",
+        "compound rubber",
+        "off grade",
+        "off-grade",
+        "offgrade"
+      ]
+    },
+    {
+      "class": "cured",
+      "keywords": [
+        "crumb",
+        "buffing",
+        "tire derived",
+        "tyre derived",
+        "tdf",
+        "shred",
+        "chip",
+        "ground rubber",
+        "granul",
+        "powder",
+        "mulch",
+        "cured",
+        "vulcanized",
+        "vulcanised",
+        "scrap tire",
+        "scrap tyre",
+        "used tire",
+        "used tyre",
+        "inner tube",
+        "bales of tire",
+        "tyre scrap",
+        "tire scrap",
+        "rubber tyre",
+        "rubber tire",
+        "tyres scrap",
+        "tires scrap",
+        "press baled",
+        "pressed baled",
+        "multicut",
+        "multi cut",
+        "tread peel",
+        "sidewall",
+        "bladder"
+      ]
+    }
   ],
   "forms": [
-    {"form": "Green tires", "keywords": ["green tire", "green tyre"]},
-    {"form": "Carcass", "keywords": ["carcass"]},
-    {"form": "Steel friction", "keywords": ["steel friction", "steel cord", "wire friction", "steel skim"]},
-    {"form": "Fabric friction", "keywords": ["fabric friction", "fabric skim", "textile friction", "ply friction", "friction"]},
-    {"form": "Grade A compound", "keywords": ["grade a", "grade-a", "prime compound"]},
-    {"form": "Mixed compound", "keywords": ["mixed compound", "mixed grade", "compound scrap", "scrap compound", "rubber compound"]}
+    {
+      "form": "Green tires",
+      "keywords": [
+        "green tire",
+        "green tyre"
+      ]
+    },
+    {
+      "form": "Carcass",
+      "keywords": [
+        "carcass"
+      ]
+    },
+    {
+      "form": "Steel friction",
+      "keywords": [
+        "steel friction",
+        "steel cord",
+        "wire friction",
+        "steel skim"
+      ]
+    },
+    {
+      "form": "Fabric friction",
+      "keywords": [
+        "fabric friction",
+        "fabric skim",
+        "textile friction",
+        "ply friction",
+        "friction"
+      ]
+    },
+    {
+      "form": "Grade A compound",
+      "keywords": [
+        "grade a",
+        "grade-a",
+        "prime compound"
+      ]
+    },
+    {
+      "form": "Mixed compound",
+      "keywords": [
+        "mixed compound",
+        "mixed grade",
+        "compound scrap",
+        "scrap compound",
+        "rubber compound"
+      ]
+    }
   ],
   "columns": {
-    "date": ["shipment date", "date of shipment", "departure date", "arrival date", "date"],
-    "description": ["goods shipped", "product description", "goods description", "description", "commodity"],
-    "weight_kg": ["weight (kg)", "weight kg", "gross weight (kg)", "weight_kg"],
-    "weight_lb": ["weight (lb)", "weight lb", "gross weight (lb)"],
-    "weight_t": ["weight (t)", "weight (mt)", "metric tons", "weight (tonnes)"],
-    "value_usd": ["value of goods (usd)", "value (usd)", "shipment value (usd)", "value usd", "value"],
-    "country": ["shipment destination", "destination country", "country of destination", "consignee country", "country of sale", "destination"],
-    "hs": ["hs code", "hs", "commodity code"]
-  }
+    "date": [
+      "shipment date",
+      "date of shipment",
+      "departure date",
+      "arrival date",
+      "date"
+    ],
+    "description": [
+      "goods shipped",
+      "product description",
+      "goods description",
+      "description",
+      "commodity"
+    ],
+    "weight_kg": [
+      "weight (kg)",
+      "weight kg",
+      "gross weight (kg)",
+      "weight_kg"
+    ],
+    "weight_lb": [
+      "weight (lb)",
+      "weight lb",
+      "gross weight (lb)"
+    ],
+    "weight_t": [
+      "weight (t)",
+      "weight (mt)",
+      "metric tons",
+      "weight (tonnes)"
+    ],
+    "value_usd": [
+      "value of goods (usd)",
+      "value (usd)",
+      "shipment value (usd)",
+      "value usd",
+      "value"
+    ],
+    "country": [
+      "shipment destination",
+      "destination country",
+      "country of destination",
+      "consignee country",
+      "country of sale"
+    ],
+    "hs": [
+      "hs code",
+      "hs",
+      "commodity code"
+    ],
+    "source": [
+      "data source"
+    ],
+    "origin": [
+      "shipment origin"
+    ],
+    "shipper": [
+      "shipper"
+    ],
+    "consignee": [
+      "consignee"
+    ]
+  },
+  "hs_overrides": {
+    "_about": "Headings that are uncured by definition (Chapter 40 note: 4005 and 4006 are unvulcanized). Applied when the description is unclassified.",
+    "4005": "uncured",
+    "4006": "uncured"
+  },
+  "sources": [
+    "US Exports",
+    "Mexico Imports"
+  ],
+  "hs_prefixes": [
+    "4004",
+    "4005",
+    "4006"
+  ]
 }
