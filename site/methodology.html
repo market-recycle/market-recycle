@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology | Uncured Rubber Scrap Index</title>
+<meta name="description" content="How the Uncured Rubber Scrap Index is calculated, published and governed.">
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <a class="brand" href="/"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="3" fill="#f2f3f8"/><rect x="2" y="2" width="28" height="28" rx="2" fill="#27367d"/><path d="M6 18h20" stroke="#b3b9d3" stroke-width="1.5" stroke-dasharray="2 2"/><path d="M6 21l5-4 5 2 10-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Uncured Rubber Scrap Index<small>market-recycle.com</small></span></a>
+    <nav aria-label="Main"><ul>
+      <li><a href="/">Index</a></li>
+      <li><a href="/methodology.html" aria-current="page">Methodology</a></li>
+      <li><a href="/history.html">History</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul></nav>
+  </div>
+</header>
+<div class="refline"><div class="wrap"><span><strong>Base</strong> January 2024 = 100</span><span><strong>Published</strong> monthly</span><span><strong>Inputs</strong> public data only</span></div></div>
+
+<main class="wrap">
+  <h1>Methodology, version 1.0</h1>
+  <div class="notice">
+    <p><strong>Draft, not yet in effect.</strong> This version is open for review. It takes effect on the date shown here once final weights are set, and no value is published before then.</p>
+    <p>Comments: <a href="mailto:index@market-recycle.com">index@market-recycle.com</a></p>
+  </div>
+
+  <div class="prose">
+  <h2 id="purpose">1. Purpose and scope</h2>
+  <p>The Uncured Rubber Scrap Index tracks month-to-month movement in the value of uncured rubber scrap produced in the United States. It is a movement index: it reports how much conditions have changed since a base month, not a price for any particular lot or grade.</p>
+  <p>The index is designed so that buyers and sellers can refer to it in supply agreements. For that reason it uses only data that is free to the public, and every published value can be recomputed by anyone from the same sources.</p>
+
+  <h2 id="calculation">2. Calculation</h2>
+  <p>Each month <em>t</em>, the index is a weighted sum of four components. Each component compares an input's level in month <em>t</em> with its level in the base month.</p>
+  <div class="formula">I<sub>t</sub> = 100 × ( w<sub>1</sub>·S<sub>t</sub> + w<sub>2</sub>·V<sub>t</sub> + w<sub>3</sub>·F<sub>t</sub> + w<sub>4</sub>·E<sub>t</sub> )</div>
+  <p>The weights w<sub>1</sub> to w<sub>4</sub> are fixed for the life of a methodology version and add to 1. The base month is January 2024, where the index equals 100.</p>
+
+  <h3>S: scrap export value</h3>
+  <p>Total value divided by total quantity (U.S. dollars per kilogram) of U.S. exports under Schedule B 4004.00.0000, rubber waste, parings and scrap, summed across all destination countries over the three months ending in month <em>t</em>. S<sub>t</sub> is that figure divided by the same figure for the base month.</p>
+
+  <h3>V: virgin rubber</h3>
+  <p>The simple average of four ratios, each the month-<em>t</em> level over the base-month level:</p>
+  <ul>
+    <li>Natural rubber TSR20, World Bank monthly price (U.S. dollars per kilogram).</li>
+    <li>Natural rubber RSS3, World Bank monthly price.</li>
+    <li>U.S. import value per kilogram of SBR in bales, HTS 4002.19 (all 10-digit statistical lines combined), three-month total.</li>
+    <li>U.S. import value per kilogram of polybutadiene, HTS 4002.20.0000, three-month total.</li>
+  </ul>
+
+  <h3>F: buyer currencies</h3>
+  <p>For each of the Indian rupee, Turkish lira, Brazilian real and Thai baht, the monthly average exchange rate in the base month divided by the monthly average in month <em>t</em> (rates in currency units per U.S. dollar). A stronger buyer currency therefore raises F. The four ratios are weighted by each country's share of the U.S. export value of 4004.00.0000 sent to those four countries during the twelve months ending in the base month. These country shares are fixed for the life of a methodology version.</p>
+
+  <h3>E: energy</h3>
+  <p>The simple average of the Brent and WTI crude oil ratios, each the World Bank monthly price in month <em>t</em> over the base month.</p>
+
+  <h2 id="weights">3. Weights</h2>
+  <p>Weights will be stated here when version 1.0 takes effect. They are chosen by testing how closely candidate weightings track observed transaction prices over at least 24 months, preferring the simplest weighting that tracks well. The test data used to choose weights is not published; the weights themselves always are, and they cannot change without a new methodology version.</p>
+
+  <h2 id="sources">4. Sources</h2>
+  </div>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Input</th><th>Source</th><th>Released</th></tr></thead>
+    <tbody>
+      <tr><td>U.S. exports and imports by commodity and country</td><td><a href="https://www.census.gov/foreign-trade/data/index.html">U.S. Census Bureau, international trade API</a></td><td>About five weeks after month end</td></tr>
+      <tr><td>TSR20, RSS3, Brent, WTI monthly prices</td><td><a href="https://www.worldbank.org/en/research/commodity-markets">World Bank Commodity Price Data</a></td><td>Early each month</td></tr>
+      <tr><td>Rupee, real and baht exchange rates</td><td>Federal Reserve H.10 release, through <a href="https://fred.stlouisfed.org/">FRED</a></td><td>Weekly, daily rates</td></tr>
+      <tr><td>Lira exchange rate</td><td><a href="https://www.tcmb.gov.tr/">Central Bank of the Republic of Türkiye</a> indicative rates (U.S. dollar, forex selling)</td><td>Each business day</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="prose">
+  <h2 id="schedule">5. Publication schedule</h2>
+  <p>Values are published on the 10th of each month, or the next business day. Because Census trade data appears about five weeks after a month ends, each publication normally covers the month two months earlier: the value published on December 10 covers October.</p>
+
+  <h2 id="revisions">6. Revisions</h2>
+  <p>Published values are never revised. Census and other sources sometimes revise their figures after the index has been published. Those revisions are used only for months not yet published; where a revision would have changed a published value by more than 0.5 index points, a note is added beside that value in the history.</p>
+
+  <h2 id="missing">7. Missing or discontinued data</h2>
+  <p>If an input is unavailable on the publication date, publication waits up to 20 days for it. If it is still unavailable, no value is published for that month, and the history records the gap and the reason. If a source is discontinued, a replacement is proposed through the change process in section 8. Agreements that refer to the index should include their own fallback for months with no published value.</p>
+
+  <h2 id="changes">8. Changes to this methodology</h2>
+  <p>Any change to inputs, formula, weights or base month creates a new version. Proposed changes are posted at least 30 days before they take effect, with an address for comments. Every prior version stays available on this site, and every published value states the version used to compute it.</p>
+
+  <h2 id="reproduce">9. Reproducing a value</h2>
+  <p>The calculation code, the inputs as downloaded on each run, and the record of published values are kept in a public repository with a dated history of every change. To reproduce a value, download the inputs listed in section 4 for the months involved and apply section 2, or run the published code against the stored inputs.</p>
+
+  <h2 id="limits">10. Limitations</h2>
+  <ul>
+    <li>The index measures movement, not price. It does not say what any lot is worth.</li>
+    <li>Schedule B 4004.00.0000 covers both cured and uncured rubber scrap, including powders and granules. The scrap export component therefore reflects the wider scrap market, not uncured compound alone.</li>
+    <li>Trade unit values move with the mix of material shipped as well as with prices.</li>
+    <li>Nothing on this site is investment, legal or purchasing advice.</li>
+  </ul>
+
+  <h2 id="governance">11. Governance</h2>
+  <p>The index follows the structure of the IOSCO Principles for Price Reporting Agencies where they apply to an index built only from public data: a published methodology, notice and consultation before changes, a complaints process, disclosure of conflicts of interest, and an annual review of whether the methodology still measures what it is meant to. See <a href="/about.html">About</a> for the publisher, its conflicts and how to raise a complaint.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>The index measures price movement. It is not a price quote, an offer, or investment advice.</p>
+    <p><a href="/about.html#independence">How the index is kept independent</a>.</p>
+  </div>
+</footer>
+</body>
+</html>

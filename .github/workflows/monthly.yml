@@ -1,0 +1,85 @@
+name: Monthly index update
+
+# Runs three times a month so the index catches Census's release whenever it lands.
+# It refreshes public inputs, recomputes, and - once the methodology is live - opens a
+# pull request with the new value. Merging that pull request IS the approval to publish.
+on:
+  schedule:
+    - cron: "17 14 3,10,17 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: monthly-index
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl==3.1.5
+
+      - name: Tests
+        run: python -m unittest discover -s tests -t .
+
+      # Capped so a slow source can't eat the whole job: partial progress is saved
+      # and committed below, and the next run picks up where this one stopped.
+      - name: Fetch public inputs
+        id: inputs
+        timeout-minutes: 40
+        continue-on-error: true
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python -m index.inputs || echo "failed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Compute
+        run: |
+          python -m index.compute --draft | tee compute.log
+          python -m index.publish --meta
+
+      - name: Save inputs and research
+        if: always()
+        run: |
+          git config user.name "index-bot"
+          git config user.email "index-bot@users.noreply.github.com"
+          mkdir -p data research drafts site/data
+          git add data research drafts site/data
+          git diff --cached --quiet || git commit -m "Update public inputs and research series"
+          git push
+
+      - name: Open approval pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATUS=$(python -c "import json;print(json.load(open('config/index.json'))['status'])")
+          if [ "$STATUS" != "live" ]; then echo "Methodology not live yet; no publication."; exit 0; fi
+          MONTH=$(ls drafts | sort | tail -1 | sed 's/.json//')
+          [ -z "$MONTH" ] && exit 0
+          if python -c "import json,sys;h=json.load(open('site/data/index.json'))['history'];sys.exit(0 if any(x['month']=='$MONTH' for x in h) else 1)"; then
+            echo "$MONTH already published."; exit 0; fi
+          BRANCH="publish/$MONTH"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then echo "Pull request already open."; exit 0; fi
+          git checkout -b "$BRANCH"
+          python -m index.publish "$MONTH"
+          git add site/data
+          git commit -m "Publish index for $MONTH"
+          git push -u origin "$BRANCH"
+          VALUE=$(python -c "import json;print(json.load(open('drafts/$MONTH.json'))['value'])")
+          gh pr create --base main --head "$BRANCH" \
+            --title "Publish index for $MONTH: $VALUE" \
+            --body "$(printf 'Computed value for %s: **%s**\n\nComponents and inputs: drafts/%s.json\n\nMerge to publish. Close without merging to hold it.' "$MONTH" "$VALUE" "$MONTH")"
+
+      - name: Fail if any input failed
+        if: steps.inputs.outputs.failed == 'true' || steps.inputs.outcome == 'failure'
+        run: |
+          cat data/inputs/fetched.json
+          exit 1

@@ -1,0 +1,44 @@
+{
+  "name": "Uncured Rubber Scrap Index",
+  "short_name": "URSI",
+  "publisher": "market-recycle.com",
+  "status": "prelaunch",
+  "methodology_version": "1.0-draft",
+  "base_month": "2024-01",
+  "base_value": 100,
+  "weights": {
+    "scrap_export": 0.4,
+    "virgin": 0.35,
+    "fx": 0.15,
+    "energy": 0.1
+  },
+  "weights_note": "Placeholder weights. Final weights are chosen from the private backtest before methodology v1.0 takes effect.",
+  "census_window_months": 3,
+  "fx_currencies": {
+    "INR": {
+      "census_country": "5330",
+      "country": "India"
+    },
+    "TRY": {
+      "census_country": "4890",
+      "country": "Turkey"
+    },
+    "BRL": {
+      "census_country": "3510",
+      "country": "Brazil"
+    },
+    "THB": {
+      "census_country": "5490",
+      "country": "Thailand"
+    }
+  },
+  "codes": {
+    "scrap_export": "4004000000",
+    "sbr_import": "400219*",
+    "br_import": "4002200000"
+  },
+  "publication_day": 10,
+  "history_months": 48,
+  "worldbank_monthly_url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx",
+  "contact_email": "index@market-recycle.com"
+}

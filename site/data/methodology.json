@@ -1,0 +1,12 @@
+{
+ "base_month": "2024-01",
+ "status": "prelaunch",
+ "version": "1.0-draft",
+ "weights": {
+  "energy": 0.1,
+  "fx": 0.15,
+  "scrap_export": 0.4,
+  "virgin": 0.35
+ },
+ "weights_published": false
+}

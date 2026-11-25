@@ -1,0 +1,26 @@
+{
+  "_about": "Rules for sorting Panjiva shipment descriptions. Checked in order: the first class whose keywords match wins, so uncured terms come before cured ones ('unvulcanized' contains 'vulcanized'). Edit and re-run; the published aggregates record which rules version produced them.",
+  "rules_version": "2026-11-25",
+  "classes": [
+    {"class": "uncured", "keywords": ["uncured", "un-cured", "unvulcan", "non-vulcan", "green tire", "green tyre", "green carcass", "compound scrap", "scrap compound", "rubber compound", "mixed compound", "grade a", "friction", "calender", "calendar trim", "mill trim", "slab", "rubber skim", "skim stock", "bead filler", "apex"]},
+    {"class": "cured", "keywords": ["crumb", "buffing", "tire derived", "tyre derived", "tdf", "shred", "chip", "ground rubber", "granul", "powder", "mulch", "cured", "vulcanized", "vulcanised", "scrap tire", "scrap tyre", "used tire", "used tyre", "inner tube", "bales of tire"]}
+  ],
+  "forms": [
+    {"form": "Green tires", "keywords": ["green tire", "green tyre"]},
+    {"form": "Carcass", "keywords": ["carcass"]},
+    {"form": "Steel friction", "keywords": ["steel friction", "steel cord", "wire friction", "steel skim"]},
+    {"form": "Fabric friction", "keywords": ["fabric friction", "fabric skim", "textile friction", "ply friction", "friction"]},
+    {"form": "Grade A compound", "keywords": ["grade a", "grade-a", "prime compound"]},
+    {"form": "Mixed compound", "keywords": ["mixed compound", "mixed grade", "compound scrap", "scrap compound", "rubber compound"]}
+  ],
+  "columns": {
+    "date": ["shipment date", "date of shipment", "departure date", "arrival date", "date"],
+    "description": ["goods shipped", "product description", "goods description", "description", "commodity"],
+    "weight_kg": ["weight (kg)", "weight kg", "gross weight (kg)", "weight_kg"],
+    "weight_lb": ["weight (lb)", "weight lb", "gross weight (lb)"],
+    "weight_t": ["weight (t)", "weight (mt)", "metric tons", "weight (tonnes)"],
+    "value_usd": ["value of goods (usd)", "value (usd)", "shipment value (usd)", "value usd", "value"],
+    "country": ["shipment destination", "destination country", "country of destination", "consignee country", "country of sale", "destination"],
+    "hs": ["hs code", "hs", "commodity code"]
+  }
+}

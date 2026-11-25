@@ -1,0 +1,26 @@
+{
+ "base_month": "2024-01",
+ "components": {
+  "energy": 1.383795,
+  "fx": 0.910933,
+  "scrap_export": 0.853257,
+  "virgin": 1.408155
+ },
+ "computed_at": "2026-11-25T06:08:23Z",
+ "fx_shares": {
+  "BRL": 0.15733,
+  "INR": 0.674566,
+  "THB": 0.157533,
+  "TRY": 0.010571
+ },
+ "inputs_fetched": null,
+ "methodology_version": "1.0-draft",
+ "month": "2026-09",
+ "value": 110.92,
+ "weights": {
+  "energy": 0.1,
+  "fx": 0.15,
+  "scrap_export": 0.4,
+  "virgin": 0.35
+ }
+}

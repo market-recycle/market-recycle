@@ -1,0 +1,46 @@
+name: Publish site
+
+# Publishes site/ to GitHub Pages: on code pushes, and after each data update
+# (commits made by the data job don't trigger push workflows on their own).
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Monthly index update"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.first_try.outputs.page_url || steps.retry.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+      # GitHub's artifact lookup is occasionally slow to see a fresh upload;
+      # wait and retry once rather than leave the site stale.
+      - id: first_try
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+      - if: steps.first_try.outcome == 'failure'
+        run: sleep 30
+      - id: retry
+        if: steps.first_try.outcome == 'failure'
+        uses: actions/deploy-pages@v5

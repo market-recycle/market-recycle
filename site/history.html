@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History | Uncured Rubber Scrap Index</title>
+<meta name="description" content="Every published value of the Uncured Rubber Scrap Index, with download.">
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <a class="brand" href="/"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="3" fill="#f2f3f8"/><rect x="2" y="2" width="28" height="28" rx="2" fill="#27367d"/><path d="M6 18h20" stroke="#b3b9d3" stroke-width="1.5" stroke-dasharray="2 2"/><path d="M6 21l5-4 5 2 10-9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Uncured Rubber Scrap Index<small>market-recycle.com</small></span></a>
+    <nav aria-label="Main"><ul>
+      <li><a href="/">Index</a></li>
+      <li><a href="/methodology.html">Methodology</a></li>
+      <li><a href="/history.html" aria-current="page">History</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul></nav>
+  </div>
+</header>
+<div class="refline"><div class="wrap"><span><strong>Base</strong> January 2024 = 100</span><span><strong>Published</strong> monthly</span><span><strong>Inputs</strong> public data only</span></div></div>
+
+<main class="wrap">
+  <h1>Published values</h1>
+  <p class="lead">Every value as it was published, never revised. Notes mark later revisions in the source data.</p>
+  <p><a class="btn" href="/data/history.csv" download>Download CSV</a></p>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Month</th><th class="num">Value</th><th class="num">Change</th><th>Published</th><th>Methodology</th><th>Note</th></tr></thead>
+    <tbody id="rows"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+  </table>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>The index measures price movement. It is not a price quote, an offer, or investment advice.</p>
+    <p><a href="/about.html#independence">How the index is kept independent</a>.</p>
+  </div>
+</footer>
+<script src="/assets/chart.js"></script>
+<script>
+(function () {
+  const body = document.getElementById("rows");
+  function row(cells) {
+    const tr = document.createElement("tr");
+    cells.forEach(([text, cls]) => { const td = document.createElement("td"); td.textContent = text; if (cls) td.className = cls; tr.appendChild(td); });
+    return tr;
+  }
+  fetch("/data/index.json", { cache: "no-cache" }).then(r => r.json()).then(rec => {
+    body.innerHTML = "";
+    if (!rec.history.length) {
+      body.appendChild(row([["No values have been published yet. The first publication follows methodology version 1.0 taking effect.", "muted"]]));
+      body.firstChild.firstChild.colSpan = 6;
+      return;
+    }
+    const h = rec.history;
+    for (let i = h.length - 1; i >= 0; i--) {
+      const prev = h[i - 1];
+      const ch = prev ? ((h[i].value / prev.value - 1) * 100) : null;
+      body.appendChild(row([
+        [monthLabel(h[i].month)], [h[i].value.toFixed(2), "num"],
+        [ch === null ? "—" : (ch >= 0 ? "+" : "−") + Math.abs(ch).toFixed(1) + "%", "num"],
+        [h[i].published], ["v" + h[i].methodology_version], [h[i].note || ""],
+      ]));
+    }
+  }).catch(() => { body.innerHTML = "<tr><td colspan='6'>The history couldn't be loaded. Refresh to try again, or download the CSV.</td></tr>"; });
+})();
+</script>
+</body>
+</html>

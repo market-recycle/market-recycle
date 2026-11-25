@@ -1,0 +1,13 @@
+# Never commit company prices or backtest output.
+*purchase*
+*prices*.csv
+backtest*
+!index/backtest.py
+*.xlsx
+__pycache__/
+*.pyc
+.DS_Store
+compute.log
+# Raw Panjiva exports name shippers and consignees: keep them out. Aggregates in data/inputs/panjiva/ are fine.
+*panjiva*.csv
+private/
