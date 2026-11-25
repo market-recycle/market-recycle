@@ -136,7 +136,9 @@ def classify(desc, rules, hs=""):
         if any(_has(d, k) for k in c["keywords"]):
             cls = c["class"]
             break
-    if cls == "unclassified":
+    # A shipment declared under several headings (printing parts, auto parts...) isn't
+    # rubber compound just because 4005 or 4006 is one of them.
+    if cls == "unclassified" and not re.search(r"[;,/]", str(hs)):
         h4 = re.sub(r"\D", "", str(hs))[:4]
         cls = rules.get("hs_overrides", {}).get(h4, cls) if h4 else cls
     form = next((f["form"] for f in rules["forms"] if any(_has(d, k) for k in f["keywords"])), None)
