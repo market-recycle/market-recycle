@@ -181,7 +181,8 @@ def aggregate(paths, rules, exclude=None):
                 if sources and src and src not in sources:
                     skipped["other data source"] += 1
                     continue
-                if not src and str(_cell(r, cols, "origin")).strip().lower() not in ("", "united states", "usa", "us"):
+                # Mexico's import records also cover shipments from other countries: keep U.S.-origin only.
+                if str(_cell(r, cols, "origin")).strip().lower() not in ("", "united states", "usa", "us"):
                     skipped["not from the U.S."] += 1
                     continue
                 prefixes = rules.get("hs_prefixes")
