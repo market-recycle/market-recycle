@@ -124,19 +124,24 @@ def month_of(v):
     return f"{m.group(1)}-{m.group(2)}" if m else None
 
 
+def _has(text, kw):
+    """Keyword at the start of a word, so 'cured' doesn't match inside 'uncured'."""
+    return re.search(r"(?<![a-z])" + re.escape(kw), text) is not None
+
+
 def classify(desc, rules, hs=""):
     d = " ".join(str(desc).lower().split())
     cls = "unclassified"
     for c in rules["classes"]:
-        if any(k in d for k in c["keywords"]):
+        if any(_has(d, k) for k in c["keywords"]):
             cls = c["class"]
             break
     if cls == "unclassified":
         h4 = re.sub(r"\D", "", str(hs))[:4]
         cls = rules.get("hs_overrides", {}).get(h4, cls) if h4 else cls
-    form = next((f["form"] for f in rules["forms"] if any(k in d for k in f["keywords"])), None)
-    if cls != "uncured":
-        form = None  # forms describe uncured material only
+    form = next((f["form"] for f in rules["forms"] if any(_has(d, k) for k in f["keywords"])), None)
+    if cls != "uncured scrap":
+        form = None  # forms describe uncured scrap only
     return cls, form
 
 

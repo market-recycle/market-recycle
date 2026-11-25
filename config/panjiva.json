@@ -1,35 +1,48 @@
 {
-  "_about": "Rules for sorting Panjiva shipment descriptions. Checked in order: the first class whose keywords match wins, so uncured terms come before cured ones ('unvulcanized' contains 'vulcanized'). Edit and re-run; the published aggregates record which rules version produced them.",
-  "rules_version": "2026-11-25b",
+  "_about": "Rules for sorting Panjiva shipment descriptions. Checked in order: the first class whose keywords match wins, so scrap terms come before cured ones ('unvulcanized' contains 'vulcanized'). Edit and re-run; the published aggregates record which rules version produced them.",
+  "rules_version": "2026-11-25c",
   "classes": [
     {
-      "class": "uncured",
+      "class": "uncured scrap",
       "keywords": [
-        "uncured",
-        "un-cured",
-        "unvulcan",
-        "non-vulcan",
+        "uncured scrap",
+        "uncured rubber scrap",
+        "un-cured scrap",
+        "unvulcanized scrap",
         "green tire",
         "green tyre",
         "green carcass",
-        "compound scrap",
-        "scrap compound",
-        "rubber compound",
-        "mixed compound",
-        "grade a",
+        "carcass",
         "friction",
-        "calender",
+        "calender trim",
         "calendar trim",
         "mill trim",
-        "slab",
-        "rubber skim",
-        "skim stock",
-        "bead filler",
-        "apex",
-        "compound rubber",
+        "grade a",
+        "grade b",
+        "grade c",
+        "grade d",
+        "a grade",
+        "b grade",
+        "c grade",
+        "d grade",
+        "grade-a",
+        "grade-b",
+        "grade-c",
         "off grade",
         "off-grade",
-        "offgrade"
+        "offgrade",
+        "off spec",
+        "off-spec",
+        "mixed compound",
+        "mixed grade",
+        "compound scrap",
+        "scrap compound",
+        "scrap rubber compound",
+        "rubber compound scrap",
+        "reject",
+        "seconds",
+        "skim stock",
+        "rubber skim"
       ]
     },
     {
@@ -68,6 +81,23 @@
         "tread peel",
         "sidewall",
         "bladder"
+      ]
+    },
+    {
+      "class": "compound, grade not stated",
+      "keywords": [
+        "rubber compound",
+        "compound rubber",
+        "compounded rubber",
+        "rubber, compounded",
+        "unvulcan",
+        "unvulcanic",
+        "uncured",
+        "non-vulcan",
+        "elastomer",
+        "compound",
+        "masterbatch",
+        "master batch"
       ]
     }
   ],
@@ -108,8 +138,28 @@
       "form": "Grade A compound",
       "keywords": [
         "grade a",
+        "a grade",
         "grade-a",
         "prime compound"
+      ]
+    },
+    {
+      "form": "Grade B-D compound",
+      "keywords": [
+        "grade b",
+        "grade c",
+        "grade d",
+        "b grade",
+        "c grade",
+        "d grade",
+        "grade-b",
+        "grade-c",
+        "grade c/d",
+        "off grade",
+        "off-grade",
+        "offgrade",
+        "off spec",
+        "off-spec"
       ]
     },
     {
@@ -188,9 +238,9 @@
     ]
   },
   "hs_overrides": {
-    "_about": "Headings that are uncured by definition (Chapter 40 note: 4005 and 4006 are unvulcanized). Applied when the description is unclassified.",
-    "4005": "uncured",
-    "4006": "uncured"
+    "_about": "Headings that are unvulcanized by definition (Chapter 40: 4005, 4006). A shipment there whose description names no scrap grade could be new compound, so it is kept apart rather than counted as scrap.",
+    "4005": "compound, grade not stated",
+    "4006": "compound, grade not stated"
   },
   "sources": [
     "US Exports",
