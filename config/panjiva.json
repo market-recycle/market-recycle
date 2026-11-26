@@ -1,6 +1,6 @@
 {
   "_about": "Rules for sorting Panjiva shipment descriptions. Checked in order: the first class whose keywords match wins, so scrap terms come before cured ones ('unvulcanized' contains 'vulcanized'). Edit and re-run; the published aggregates record which rules version produced them.",
-  "rules_version": "2026-11-26",
+  "rules_version": "2026-11-26b",
   "classes": [
     {
       "class": "uncured scrap",
@@ -272,5 +272,9 @@
     "4005",
     "4006"
   ],
-  "max_usd_per_kg": 3.0
+  "max_usd_per_kg": 3.0,
+  "ungraded_by_price": {
+    "_about": "Ungraded compound (4005/4006 lines naming no scrap grade) splits into two price groups: scrap-grade around $0.50-1.00/kg and new compound around $1.25-2.50/kg, with a gap near $1.10/kg in 2023 shipments. Lines with a value below the cutoff are counted as 'likely scrap compound (by price)'; above it as 'likely new compound (by price)'.",
+    "cutoff_usd_per_kg": 1.1
+  }
 }

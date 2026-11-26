@@ -222,6 +222,10 @@ def aggregate(paths, rules, exclude=None):
                 seen.add(key)
                 desc = r[cols["description"]]
                 cls, form = classify(desc, rules, _cell(r, cols, "hs"))
+                ub = rules.get("ungraded_by_price")
+                if cls == "compound, grade not stated" and ub and val:
+                    cls = ("likely scrap compound (by price)" if val / kg < ub["cutoff_usd_per_kg"]
+                           else "likely new compound (by price)")
                 if cls == "unclassified":
                     unplaced[" ".join(str(desc).split())[:120]] += 1
                 rec = months.setdefault(m, {"classes": {}, "forms": {}, "countries": {}})
