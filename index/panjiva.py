@@ -210,7 +210,8 @@ def aggregate(paths, rules, exclude=None):
                 # Rubber scrap and compound don't sell above a few dollars a kilo; above the ceiling the
                 # line is almost always mixed cargo or a keying error, so it is left out entirely.
                 cap = rules.get("max_usd_per_kg")
-                if cap and val and val / kg > cap:
+                h4 = re.sub(r"\D", "", str(_cell(r, cols, "hs")))[:4]
+                if cap and val and val / kg > cap and h4 not in ("4005", "4006"):
                     skipped["implausible value"] += 1
                     continue
                 country = str(_cell(r, cols, "country")).strip().title() or "Unknown"
@@ -222,6 +223,10 @@ def aggregate(paths, rules, exclude=None):
                 seen.add(key)
                 desc = r[cols["description"]]
                 cls, form = classify(desc, rules, _cell(r, cols, "hs"))
+                # New compound (specialty grades especially) can sell well above the scrap ceiling:
+                # in 4005/4006 such lines are counted as new compound, never as scrap.
+                if cap and val and val / kg > cap:
+                    cls, form = "likely new compound (by price)", None
                 ub = rules.get("ungraded_by_price")
                 if cls == "compound, grade not stated" and ub and val:
                     cls = ("likely scrap compound (by price)" if val / kg < ub["cutoff_usd_per_kg"]
