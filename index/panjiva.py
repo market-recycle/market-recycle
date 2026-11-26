@@ -207,6 +207,12 @@ def aggregate(paths, rules, exclude=None):
                     skipped["no date or weight"] += 1
                     continue
                 val = num(r[cols["value_usd"]]) if "value_usd" in cols else None
+                # Rubber scrap and compound don't sell above a few dollars a kilo; above the ceiling the
+                # line is almost always mixed cargo or a keying error, so it is left out entirely.
+                cap = rules.get("max_usd_per_kg")
+                if cap and val and val / kg > cap:
+                    skipped["implausible value"] += 1
+                    continue
                 country = str(_cell(r, cols, "country")).strip().title() or "Unknown"
                 # The same shipment can sit on several tabs (e.g. one per company tracked).
                 key = (str(_cell(r, cols, "shipper")).lower()[:24], str(r[cols["date"]])[:10], round(kg), val, country)

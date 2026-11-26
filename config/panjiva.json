@@ -1,6 +1,6 @@
 {
   "_about": "Rules for sorting Panjiva shipment descriptions. Checked in order: the first class whose keywords match wins, so scrap terms come before cured ones ('unvulcanized' contains 'vulcanized'). Edit and re-run; the published aggregates record which rules version produced them.",
-  "rules_version": "2026-11-25c",
+  "rules_version": "2026-11-26",
   "classes": [
     {
       "class": "uncured scrap",
@@ -80,7 +80,11 @@
         "multi cut",
         "tread peel",
         "sidewall",
-        "bladder"
+        "bladder",
+        "micronized",
+        "micronised",
+        "tdf",
+        "rubber mulch"
       ]
     },
     {
@@ -98,6 +102,23 @@
         "compound",
         "masterbatch",
         "master batch"
+      ]
+    },
+    {
+      "class": "not rubber",
+      "keywords": [
+        "clothes",
+        "clothing",
+        "metal scrap",
+        "aluminium",
+        "aluminum",
+        "copper",
+        "steel scrap",
+        "paper",
+        "plastic scrap",
+        "balikbayan",
+        "household goods",
+        "personal effects"
       ]
     }
   ],
@@ -250,5 +271,6 @@
     "4004",
     "4005",
     "4006"
-  ]
+  ],
+  "max_usd_per_kg": 3.0
 }
